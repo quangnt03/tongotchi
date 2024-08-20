@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   mongo:
@@ -20,12 +20,12 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: admin123
       ME_CONFIG_MONGODB_URL: mongodb://root:admin123@mongo:27017/
       ME_CONFIG_BASICAUTH: false
-  myapp:
+  tongotchi:
     build: .
     expose:
       - 80
     ports:
-      - "8000:80"
+      - "3000:80"
     env_file:
       - .env
     volumes:
