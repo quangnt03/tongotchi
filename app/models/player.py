@@ -1,5 +1,5 @@
 from beanie import Document, Link
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List
 from .pet import Pet
 from datetime import date
@@ -8,7 +8,7 @@ class Player(Document):
     telegram_code: str
     reminder_code: str | None = None
     milestone: int
-    social_quest_completed: bool
+    social_quest_completed: List[bool] = [False, False, False, False, False]
     is_tutorial_done: bool
     tutorial_phrase: int
     game_ticket: int
@@ -22,3 +22,6 @@ class Player(Document):
     
 class PlayerTelegramCode(BaseModel):
     telegram_code: str
+    
+class PlayerSocialQuest(PlayerTelegramCode):
+    quest: int
