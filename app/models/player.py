@@ -1,8 +1,8 @@
-from beanie import Document, Link
-from pydantic import BaseModel, validator
+from beanie import Document
+from pydantic import BaseModel
 from typing import List
-from .pet import Pet
 from datetime import date
+from app.config import constants
 
 class Player(Document):
     telegram_code: str
@@ -15,10 +15,12 @@ class Player(Document):
     ticket: int
     diamond: int
     accumulated_point: int
-    pets: List[Link[Pet]] = list[Link[Pet]]()
-    selected_pet: Pet | None = None
+    pets: List[int] = set[int]()
+    pet_slot: int = constants.NORMAL_PET_SLOT
+    selected_pet: int | None = None
     last_claimed_reward: date
     day_collected: int
+    
     
 class PlayerTelegramCode(BaseModel):
     telegram_code: str

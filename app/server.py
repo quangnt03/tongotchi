@@ -3,9 +3,11 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException
 from dotenv import find_dotenv, load_dotenv
+
 from app.database import lifespan
 from app.routes.player import player_router
-from app.middlewares.TelegramMiddleware import TelegramCodeMiddleware
+from app.routes.pet import pet_router
+
 load_dotenv(find_dotenv())
 
 app = FastAPI(lifespan=lifespan)
@@ -40,6 +42,7 @@ async def custom_exception_handler(request: Request, exc: HTTPException):
 
 # app.add_middleware(TelegramCodeMiddleware)
 app.include_router(player_router)
+app.include_router(pet_router)
 
 @app.get('/')
 def index():

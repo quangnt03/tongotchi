@@ -2,9 +2,12 @@ from app.models.player import Player
 from app.config import constants
 from app.handler import exceptions
 
-async def find_player_by_telegram_code(telegram_code: str) -> Player | None:
-    player = await Player.find_one(Player.telegram_code == telegram_code)
-    return player if player else None
+async def find_player_by_telegram_code(id) -> Player | None:
+    try:
+        player = await Player.find_one({ "telegram_code": id })
+        return player if player else None
+    except Exception as e:
+        print(e)
 
 async def get_player_or_not_found(telegram_code: str) -> Player:
     player = await find_player_by_telegram_code(telegram_code)

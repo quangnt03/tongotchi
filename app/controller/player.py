@@ -1,5 +1,6 @@
+from datetime import datetime
 from fastapi.responses import JSONResponse
-from app.services import player as PlayerService
+from app.services import player as PlayerService, pet as PetService
 from app.handler import exceptions
 # from app.dependencies.auth import PlayerAuthenticationDep
 
@@ -43,7 +44,15 @@ async def complete_quest(telegram_code: str, quest: int):
     for status in player.social_quest_completed:
         if status:
             no_completed_quest += 1
-    
+            
+    if no_completed_quest == len(player.social_quest_completed):
+        pet_list = await PetService.find_pet_with_player(telegram_code)
+        for pet in pet_list:
+            if pet.pet_phrase == 2 and pet.target_hatching_time > datetime.now():
+                pet.target_hatching_time = datetime.now()
+                await pet.save()
+                break
+            
     await player.save()
     return JSONResponse({
         "status_code": 200,
