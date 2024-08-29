@@ -10,7 +10,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Cloning the GitHub repository
-                git url: 'https://github.com/quangnt03/tonsbowl.git', branch: 'main'
+                git url: 'https://github.com/quangnt03/tongotchi.git', branch: 'main'
             }
         }
         stage('Build Docker Image') {
