@@ -12,6 +12,9 @@ async def get_or_create_player(telegram_code: str):
     player_in_db = await PlayerService.find_player_by_telegram_code(telegram_code)
     if not player_in_db:
         player_in_db = await PlayerService.create_player(telegram_code)
+    else:
+        print(player_in_db)
+        player_in_db = await PlayerService.daily_login(player_in_db)
     return player_in_db
 
 async def get_player_quest(telegram_code: str):

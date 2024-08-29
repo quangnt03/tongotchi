@@ -1,3 +1,5 @@
+from datetime import date
+
 from app.models.player import Player
 from app.config import constants
 from app.handler import exceptions
@@ -9,6 +11,7 @@ async def find_player_by_telegram_code(id) -> Player | None:
     except Exception as e:
         print(e)
 
+
 async def get_player_or_not_found(telegram_code: str) -> Player:
     player = await find_player_by_telegram_code(telegram_code)
     if player is None:
@@ -17,6 +20,7 @@ async def get_player_or_not_found(telegram_code: str) -> Player:
         })
     return player
 
+
 async def create_player(telegram_code: str) -> Player:
     player = Player(
         telegram_code=telegram_code,
@@ -24,6 +28,7 @@ async def create_player(telegram_code: str) -> Player:
     )
     await player.save()
     return player
+
 
 async def get_player_social_quest(player: Player) -> list[dict]:
     # Add logic to generate a social quest for the player
@@ -35,3 +40,25 @@ async def get_player_social_quest(player: Player) -> list[dict]:
                 "is_completed": status
             })
     return quest
+
+
+async def daily_login(player: Player) -> Player:
+    print('checking')
+    if player.last_claimed_reward == date.today():
+        return player
+    login_day_diff = date.today() - player.last_claimed_reward
+    if login_day_diff.days >= 1 or player.day_collected == constants.MAX_DAILY_STREAK:
+        player.day_collected = 1
+    else:
+        player.day_collected += 1
+    award_ticket = 0
+    if player.day_collected == 1:
+        award_ticket += 20
+    elif player.day_collected == 2:
+        award_ticket += 25
+    else:
+        award_ticket = (player.day_collected + 2) * constants.BASE_TICKET_FACTOR
+    player.ticket += award_ticket
+    player.last_claimed_reward = date.today()
+    await player.save()
+    return player
