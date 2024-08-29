@@ -2,6 +2,7 @@ from datetime import datetime
 from fastapi.responses import JSONResponse
 from app.services import player as PlayerService, pet as PetService
 from app.handler import exceptions
+from app.config import constants
 # from app.dependencies.auth import PlayerAuthenticationDep
 
 async def get_or_create_player(telegram_code: str):
@@ -42,8 +43,9 @@ async def complete_quest(telegram_code: str, quest: int):
         })
         
     player.social_quest_completed[quest] = True
-    no_completed_quest = 0
-    
+    player.ticket += constants.SOCIAL_QUEST_TICKET_REWARD
+ 
+    no_completed_quest = 0 
     for status in player.social_quest_completed:
         if status:
             no_completed_quest += 1

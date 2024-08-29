@@ -25,6 +25,7 @@ class Pet(Document):
     today_play_exp: int = 0
     today_clean_exp: int = 0
     today_boost_exp: int = 0
+    sickness: bool = False
 
     def start_hatch(self):
         self.pet_phrase += 1
@@ -37,7 +38,12 @@ class Pet(Document):
         self.last_sleep_time = datetime.now()
         self.last_saved_time = datetime.now()
         return self
-
+    
+    def get_health(self):
+        return self.happy_value * constants.INDICATOR['happiness'] + \
+            self.hygiene_value * constants.INDICATOR['hygiene'] + \
+            self.hunger_value * constants.INDICATOR['hunger']
+            
 class QuerySinglePet(BaseModel):
     telegram_code: str
     pet_id: int

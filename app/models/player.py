@@ -27,3 +27,6 @@ class PlayerTelegramCode(BaseModel):
     
 class PlayerSocialQuest(PlayerTelegramCode):
     quest: int
+
+class PlayerPurchase(PlayerTelegramCode):
+    quantity: int

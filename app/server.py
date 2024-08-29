@@ -9,6 +9,9 @@ from app.routes.farm import farm_router
 from app.routes.pet import pet_router
 from app.routes.player import player_router
 from app.routes.tutorial import tutorial_router
+from app.routes.inventory import inventory_router
+from app.routes.purchase import purchase_router
+
 
 load_dotenv(find_dotenv())
 
@@ -43,6 +46,8 @@ app.include_router(player_router)
 app.include_router(pet_router)
 app.include_router(farm_router)
 app.include_router(tutorial_router)
+app.include_router(inventory_router)
+app.include_router(purchase_router)
 
 
 @app.get("/")

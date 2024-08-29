@@ -49,3 +49,8 @@ class InternalServerException(HTTPException):
             **detail,
             "status_code": status_code
         }
+        
+class BrokenItemException(Exception):
+    def __init__(self, message="Unable to use the item") -> None:
+        super().__init__(message)
+  

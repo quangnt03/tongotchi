@@ -1,0 +1,29 @@
+from enum import Enum
+from typing import Mapping
+
+class ITEM_CATEGORY(Enum):
+    FOOD = 0
+    MEDICINE = 1
+    TOY = 2
+    BOOST = 3
+
+class ACTIVITY_CATEGORY(Enum):
+    FEED = 0
+    PLAY = 1
+    CLEAN = 2
+    CURE = 3
+    
+ITEM_ACT_MAP: Mapping[ACTIVITY_CATEGORY, ITEM_CATEGORY] = {
+    ACTIVITY_CATEGORY.FEED: ITEM_CATEGORY.FOOD,
+    ACTIVITY_CATEGORY.PLAY: ITEM_CATEGORY.TOY,
+    ACTIVITY_CATEGORY.CURE: ITEM_CATEGORY.MEDICINE
+} 
+    
+class HEALH_INDICATOR(Enum):
+    HAPPINESS = 0.3
+    HYGIENE = 0.4
+    HUNGER = 0.3
+    
+class CURRENCY_MAP(Enum):
+    DIAMOND = 1
+    TICKET = 2
