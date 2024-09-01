@@ -16,6 +16,8 @@ TOY_USAGE_LIMIT = 10
 SOCIAL_QUEST_TICKET_REWARD = 40
 TICKET_PER_DIAMOND = 920
 DIAMOND_PER_PETSLOT = 4
+AWAKE_DURATION = timedelta(hours=6)
+SLEEP_DURATION = timedelta(hours=2)
 
 NEW_PLAYER = {
     "reminder_code": None,
