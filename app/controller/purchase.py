@@ -59,7 +59,7 @@ async def purchase_item(telegram_code: str, item_id: int):
     if item is None:
         raise exceptions.InvalidBodyException({"message": "Item not found"})
     currency = 0
-    if item["currencyType"] == CURRENCY_MAP.TICKET:
+    if item["currencyType"] == 2:
         currency = player.ticket
     else:
         currency = player.diamond
@@ -70,7 +70,7 @@ async def purchase_item(telegram_code: str, item_id: int):
     current_item = await ItemService.buy_item(player, item_id)
     currencyType = "ticket"
     
-    if item["currencyType"] == CURRENCY_MAP.TICKET:
+    if item["currencyType"] == 2:
         player.ticket = currency
     else:
         player.diamond = currency

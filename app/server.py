@@ -29,7 +29,6 @@ app.add_middleware(
 
 @app.exception_handler(HTTPException)
 async def custom_exception_handler(request: Request, exc: HTTPException):
-    print("handling exception")
     if type(exc.detail) == dict:
         return JSONResponse(
             status_code=exc.status_code,

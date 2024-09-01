@@ -1,6 +1,7 @@
 from app.models.item import Item 
 from app.models.player import Player
 from app.config.item import items, Item as LocalItem
+from app.config.enum import ITEM_CATEGORY
 
 
 async def find_item(player: Player, item_id: int) -> Item:
@@ -23,7 +24,11 @@ async def buy_item(player: Player, item_id: int) -> Item:
     ).first_or_none()
 
     if item is None:
-        item = await Item(item_id=item_id, telegram_code=player.telegram_code).insert()
+        local_item = get_local_item(item_id)
+        item = Item(item_id=item_id, telegram_code=player.telegram_code)
+        if local_item["category"] == ITEM_CATEGORY.TOY:
+            item.usage_limit = 10
+        await item.insert()
     else:
         item.quantity += 1
         await item.save()

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from beanie import Document
 from pydantic import BaseModel
 from app import utils
-from app.config import constants
+from app.config import constants, enum
 
 class Pet(Document):
     telegram_code: str
@@ -12,10 +12,10 @@ class Pet(Document):
     next_poop_time: datetime | None = None
     is_sleeping: bool = False
     current_background_id: int = 0
-    happy_value: float = 100
-    hygiene_value: float = 100
-    hunger_value: float = 100
-    health_value: float = 100
+    happy_value: float = 0
+    hygiene_value: float = 0
+    hunger_value: float = 0
+    health_value: float = 0
     target_hatching_time: datetime | None = None
     pet_level: int = 0
     pet_evolve_level: int = 0
@@ -36,14 +36,24 @@ class Pet(Document):
     def claim_hatch(self):
         self.pet_phrase += 1
         self.next_poop_time = utils.next_poop_time()
-        self.last_sleep_time = datetime.now()
+        self.last_sleep_time = datetime.now() - timedelta(hours=2)
         self.last_saved_time = datetime.now()
+        self.happy_value = 70
+        self.hygiene_value = 70
+        self.hunger_value = 70
+        self.health_value = self.get_health() 
         return self
     
-    def get_health(self):
-        return self.happy_value * constants.INDICATOR['happiness'] + \
-            self.hygiene_value * constants.INDICATOR['hygiene'] + \
-            self.hunger_value * constants.INDICATOR['hunger']
+    def gain_exp(self, exp: int):
+        self.pet_exp += exp
+        return self
+    
+    
+    def get_health(self) -> float:
+        return self.happy_value * enum.HEALTH_INDICATOR.HAPPINESS + \
+            self.hygiene_value * enum.HEALTH_INDICATOR.HYGIENE + \
+            self.hunger_value * enum.HEALTH_INDICATOR.HUNGER
+            
     
     def poop(self):
         if self.pet_phrase == 3 and datetime.now() >= self.next_poop_time and self.poop_count < 6:
@@ -53,19 +63,27 @@ class Pet(Document):
     
     def sleeping(self):
         if self.pet_phrase == 3:
-            awake_time = self.last_sleep_time + constants.SLEEP_DURATION
-            next_sleep_time = awake_time + constants.AWAKE_DURATION
-            if self.is_sleeping and datetime.now() >= awake_time:
-                self.is_sleeping = False
-            elif datetime.now() >= next_sleep_time:
+            timediff = datetime.now() - self.last_sleep_time
+            hours = timediff.seconds // 3600
+            if hours % 8 < 2:
                 self.is_sleeping = True
-                self.last_sleep_time = next_sleep_time
-        return self
+            else:
+                self.is_sleeping = False
+            sleep_period = (hours // 8) * 8
+            self.last_sleep_time = self.last_sleep_time + timedelta(hours=sleep_period)
+        return self.is_sleeping
+    
+    async def update_info(self):
+        self.last_saved_time = datetime.now()
+        self.poop().sleeping()
+        self.health_value = 0.3 * self.happy_value + 0.3 * self.hunger_value + 0.4 * self.hygiene_value
+        if self.health_value < 30:
+            self.sickness = True
+        else:
+            self.sickness = False
+        await self.save()
+        
+
 class QuerySinglePet(BaseModel):
     telegram_code: str
     pet_id: int
-"""
-last sleep = 11h
-awaking_until = 17
-sleep_until = 19
-"""

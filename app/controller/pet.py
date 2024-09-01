@@ -53,7 +53,6 @@ async def hatch_pet(telegram_code: str, pet_id: int):
             {"message": "Player does not own pet with such id"}
         )
     pet = await PetService.get_pet_by_pet_id(telegram_code, pet_id)
-    print (pet)
     if pet.pet_phrase > 1:
         raise exceptions.InvalidBodyException(
             {"message": "The selected pet is being hatched"}

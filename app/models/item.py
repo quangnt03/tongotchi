@@ -1,8 +1,6 @@
 from beanie import Document
 
-from .pet import QuerySinglePet
 from .player import PlayerTelegramCode
-from app.config.enum import ACTIVITY_CATEGORY
 from app.handler import exceptions
 
 class Item(Document):
@@ -24,10 +22,5 @@ class Item(Document):
 
     
 class QueryItem(PlayerTelegramCode):
-    item_id: int
-    
-    
-class Activity(QuerySinglePet):
-    activity_type: ACTIVITY_CATEGORY
     item_id: int
     

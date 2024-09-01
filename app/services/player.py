@@ -5,11 +5,8 @@ from app.config import constants
 from app.handler import exceptions
 
 async def find_player_by_telegram_code(id) -> Player | None:
-    try:
-        player = await Player.find_one({ "telegram_code": id })
-        return player if player else None
-    except Exception as e:
-        print(e)
+    player = await Player.find_one({ "telegram_code": id })
+    return player if player else None
 
 
 async def get_player_or_not_found(telegram_code: str) -> Player:
@@ -43,7 +40,6 @@ async def get_player_social_quest(player: Player) -> list[dict]:
 
 
 async def daily_login(player: Player) -> Player:
-    print('checking')
     if player.last_claimed_reward == date.today():
         return player
     login_day_diff = date.today() - player.last_claimed_reward

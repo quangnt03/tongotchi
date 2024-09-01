@@ -5,7 +5,7 @@ class Item(TypedDict):
     tab: int
     itemName: str
     category: int
-    specficCategory: int
+    specificCategory: int
     currencyType: int
     price: int
     value: int

@@ -1,29 +1,67 @@
-from enum import Enum
-from typing import Mapping
+from enum import IntEnum
+from typing import Mapping, Union
 
-class ITEM_CATEGORY(Enum):
+class ITEM_CATEGORY(IntEnum):
     FOOD = 0
     MEDICINE = 1
     TOY = 2
     BOOST = 3
+    
+class FOOD_CATEGORY(IntEnum):
+    SWEET = 0 
+    FRUIT = 1
+    MAIN_COURSE = 2
 
-class ACTIVITY_CATEGORY(Enum):
+class TOY_CATEGORY(IntEnum):
+    SMALL = 3
+    MEDIUM = 4
+    BIG = 5
+    NONE = 6
+
+class ACTIVITY_CATEGORY(IntEnum):
     FEED = 0
     PLAY = 1
     CLEAN = 2
     CURE = 3
+    BATH = 7
     
-ITEM_ACT_MAP: Mapping[ACTIVITY_CATEGORY, ITEM_CATEGORY] = {
+    
+ITEM_ACT_MAP: Mapping[int, int] = {
     ACTIVITY_CATEGORY.FEED: ITEM_CATEGORY.FOOD,
     ACTIVITY_CATEGORY.PLAY: ITEM_CATEGORY.TOY,
     ACTIVITY_CATEGORY.CURE: ITEM_CATEGORY.MEDICINE
 } 
+
+
+ITEM_EXP_MAP: Mapping[int, int] = {
+    FOOD_CATEGORY.SWEET: 5,
+    FOOD_CATEGORY.FRUIT: 10,
+    FOOD_CATEGORY.MAIN_COURSE: 15,
+    TOY_CATEGORY.SMALL: 5,
+    TOY_CATEGORY.MEDIUM: 10,
+    TOY_CATEGORY.BIG: 15,
+    ACTIVITY_CATEGORY.BATH: 5,
+    ACTIVITY_CATEGORY.CLEAN: 2,
+}
+
+
+ACTIVITY_TICKET_MAP: Mapping[int, int] = {
+    ACTIVITY_CATEGORY.BATH: 15,
+    ACTIVITY_CATEGORY.CLEAN: 5,
+}
+
+
+ACTIVITY_STATS: Mapping[int, int] = {
+    ACTIVITY_CATEGORY.BATH: 30,
+    ACTIVITY_CATEGORY.CLEAN: 11.67,
+}
+
     
-class HEALH_INDICATOR(Enum):
+class HEALTH_INDICATOR(IntEnum):
     HAPPINESS = 0.3
     HYGIENE = 0.4
     HUNGER = 0.3
     
-class CURRENCY_MAP(Enum):
+class CURRENCY_MAP(IntEnum):
     DIAMOND = 1
     TICKET = 2
