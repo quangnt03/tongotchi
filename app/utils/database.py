@@ -1,3 +1,4 @@
+import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from app.config import env
@@ -8,7 +9,7 @@ from app.models.item import Item
 
 
 async def connect():
-    client = AsyncIOMotorClient(env.mongo_url)
-    database = client[env.database]
+    client = AsyncIOMotorClient(os.getenv("MONGO_URL"))
+    database = client[os.getenv("DATABASE")]
     await init_beanie(database, document_models=[Player, Pet, Farm, Item])
-    print("INFO:", "Database Connection established", sep="\t")
+    print("INFO:", "    Database Connection established", sep="\t")

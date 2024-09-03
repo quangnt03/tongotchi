@@ -1,4 +1,5 @@
 from dotenv import find_dotenv, load_dotenv
+load_dotenv(find_dotenv())
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,8 +14,6 @@ from app.routes.inventory import inventory_router
 from app.routes.purchase import purchase_router
 from app.routes.activity import activity_router
 
-
-load_dotenv(find_dotenv())
 
 app = FastAPI(lifespan=lifespan)
 

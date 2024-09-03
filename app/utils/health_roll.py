@@ -1,10 +1,5 @@
 import random
-from datetime import datetime, timedelta
 from app.config.constants import SICKNESS_PERCENT
-
-def next_poop_time(start_time: datetime = datetime.now()) -> datetime:
-    return start_time + timedelta(minutes=random.randint(45, 60))
-
 
 def is_sickness() -> bool:  
     choices = []

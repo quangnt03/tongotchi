@@ -10,14 +10,14 @@ async def create_pet(pet_id: int, player: Player) -> Pet:
 
 async def find_pet_with_player(telegram_code: str) -> list[Pet]:
     pets = await Pet.find({"telegram_code": telegram_code}).to_list()
-    for pet in pets:
-        await pet.update_info()
+    # for pet in pets:
+    #     await pet.update_info()
     return pets
 
 
 async def get_pet_by_pet_id(telegram_code: str, pet_id: int) -> Pet:
     pet = await Pet.find_one({"telegram_code": telegram_code, "pet_id": pet_id})
-    await pet.update_info()
+    # await pet.update_info()
     return pet
 
 
