@@ -1,7 +1,6 @@
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from app.config import env
 from app.models.player import Player
 from app.models.pet import Pet
 from app.models.farm import Farm
