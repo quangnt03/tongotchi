@@ -9,7 +9,7 @@ COPY . /usr/src
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-RUN wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+
 # Expose port 80 for the app
 EXPOSE 80
 
