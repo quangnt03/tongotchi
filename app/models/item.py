@@ -1,6 +1,5 @@
 from beanie import Document
-
-from .player import PlayerTelegramCode
+from pydantic import BaseModel
 from app.handler import exceptions
 
 class Item(Document):
@@ -18,7 +17,12 @@ class Item(Document):
         return self        
 
     
-class QueryItem(PlayerTelegramCode):
+class QueryItem(BaseModel):
+    telegram_code: str
     item_id: int
     pet_id: int | None = None
+
+class QueryOnlyItem(BaseModel):
+    telegram_code: str
+    item_id: int
     

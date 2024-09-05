@@ -1,4 +1,4 @@
-from app.services import player as PlayerService, item as ItemService
+from app.services import player as PlayerService, item as ItemService, pet as PetService
 from app.config import constants
 from app.config.enum import *
 from app.handler import exceptions
@@ -69,8 +69,14 @@ async def purchase_item(telegram_code: str, pet_id: int, item_id: int):
     # TODO: If item is a boost, apply directly to player/pet
     
     currency -= item["price"]
+    pet = None
     if item["category"] < 3:
         current_item = await ItemService.buy_item(player, item_id)
+    elif item["Id"] == constants.TICKET_BOOST_ITEM_ID:
+        player = PlayerService.get_boost(player)
+    elif item["Id"] == constants.XP_BOOST_ITEM_ID:
+        pet = await PetService.get_pet_by_pet_id(telegram_code, pet_id)
+        pet.pet_exp += constants.XP_BOOST
         
     currencyType = "ticket"
     
@@ -81,4 +87,19 @@ async def purchase_item(telegram_code: str, pet_id: int, item_id: int):
         currencyType = "diamond"
         
     await player.save()
-    return {"item": current_item, currencyType: currency}
+    if pet is not None:
+        await pet.save()
+        
+    if item["category"] < 3:
+        return {"item": current_item, currencyType: currency}
+    elif item_id == constants.TICKET_BOOST_ITEM_ID:
+        return {
+            currencyType: currency, 
+            "boost_until": player.boost.isoformat()
+        }
+    elif item["Id"] == constants.XP_BOOST_ITEM_ID:
+        return {
+            currencyType: currency,
+            "pet_id": pet_id, 
+            "pet_exp": pet.pet_exp,
+        }

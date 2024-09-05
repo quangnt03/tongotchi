@@ -23,7 +23,7 @@ class Player(Document):
     day_collected: int
     
     def gain_ticket(self, ticket: int):
-        if self.boost >= date.today():
+        if self.boost is not None and self.boost >= date.today():
             ticket = ticket * 2
         self.ticket += ticket
         return self

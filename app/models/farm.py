@@ -7,10 +7,7 @@ class Farm(Document):
     telegram_code: str
     start: datetime = datetime.now()
     end: datetime = datetime.now() + constants.FARM_DURATION
-    
-class FarmResponse(Farm):
-    now: datetime = datetime.now()
-    
+       
 class FarmRequest(BaseModel):
     telegram_code: str
     reminder_code: str

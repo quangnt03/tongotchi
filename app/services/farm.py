@@ -1,7 +1,9 @@
-from app.models.farm import Farm, FarmResponse
+from datetime import datetime
 
-async def create_new_farm(telegram_code: str) -> FarmResponse:
-    farm = Farm(telegram_code=telegram_code)
+from app.models.farm import Farm
+
+async def create_new_farm(telegram_code: str):
+    farm = Farm(telegram_code=telegram_code, start=datetime.now())
     await farm.save()
     return farm
 

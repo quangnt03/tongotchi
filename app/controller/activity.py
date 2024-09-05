@@ -38,13 +38,13 @@ async def complete_activity(
     if action == ACTIVITY_CATEGORY.BATH:
         statistic = pet.hygiene_value
         daily_exp = pet.today_clean_exp
-        reward_exp = ITEM_EXP_MAP[ACTIVITY_CATEGORY.BATH]
+        reward_exp = CLEAN_EXP_MAP[ACTIVITY_CATEGORY.BATH]
     elif action == ACTIVITY_CATEGORY.CLEAN:
         if pet.poop_count == 0:
             raise exceptions.InvalidBodyException({"message": "No poop to clean"})
         statistic = pet.poop_count
         daily_exp = pet.today_clean_exp
-        reward_exp = ITEM_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count 
+        reward_exp = CLEAN_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count 
     elif action == ACTIVITY_CATEGORY.PLAY:
         statistic = pet.happy_value
         daily_exp = pet.today_play_exp
@@ -101,26 +101,27 @@ def activity_reducer(
 
     if action == ACTIVITY_CATEGORY.BATH:
         player = player.gain_ticket(ACTIVITY_TICKET_MAP[ACTIVITY_CATEGORY.BATH])
-        pet.pet_exp += ITEM_EXP_MAP[ACTIVITY_CATEGORY.BATH]
-        pet.today_clean_exp += ITEM_EXP_MAP[ACTIVITY_CATEGORY.BATH]
+        pet.pet_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.BATH]
+        pet.today_clean_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.BATH]
         pet.hygiene_value += ACTIVITY_STATS[ACTIVITY_CATEGORY.CLEAN]
     
     elif action == ACTIVITY_CATEGORY.CLEAN:
         player = player.gain_ticket(ACTIVITY_TICKET_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count)
-        pet.pet_exp += ITEM_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count
-        pet.today_clean_exp += ITEM_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count
+        pet.pet_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count
+        pet.today_clean_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count
         pet.poop_count = 0
         
     else:
         specific_category = item_detail["specificCategory"]
-        pet.pet_exp += ITEM_EXP_MAP[specific_category]
+        exp = ITEM_EXP_MAP[specific_category]
+        pet.pet_exp += exp
         value = item_detail["value"]
         if action == ACTIVITY_CATEGORY.PLAY:
             pet.happy_value += value        
-            pet.today_play_exp += ITEM_EXP_MAP[specific_category]
+            pet.today_play_exp += exp
         else:
             pet.hunger_value += value
-            pet.today_feed_exp += ITEM_EXP_MAP[specific_category]
+            pet.today_feed_exp += exp
     
     if pet.sickness:
         pet.happy_value = 30 if pet.happy_value > 30 else pet.happy_value
