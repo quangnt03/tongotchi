@@ -17,9 +17,16 @@ class Player(Document):
     accumulated_point: int
     pets: List[int] = set[int]()
     pet_slot: int = constants.NORMAL_PET_SLOT
+    boost: date | None = None
     selected_pet: int | None = None
     last_claimed_reward: date
     day_collected: int
+    
+    def gain_ticket(self, ticket: int):
+        if self.boost >= date.today():
+            ticket = ticket * 2
+        self.ticket += ticket
+        return self
     
     
 class PlayerTelegramCode(BaseModel):

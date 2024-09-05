@@ -54,7 +54,14 @@ async def daily_login(player: Player) -> Player:
         award_ticket += 25
     else:
         award_ticket = (player.day_collected + 2) * constants.BASE_TICKET_FACTOR
-    player.ticket += award_ticket
+    player = player.gain_ticket(award_ticket)
     player.last_claimed_reward = date.today()
     await player.save()
+    return player
+
+
+def get_boost(player: Player):
+    if player.boost is None or player.boost < date.today():
+        player.boost = date.today() 
+    player.boost += constants.BOOST_DURATION
     return player

@@ -11,7 +11,7 @@ async def purchase_ticket(telegram_code: str, quantity: int):
     if player.diamond < quantity:
         raise exceptions.InvalidBodyException({"message": "Not enough diamond"})
     
-    player.diamond -= 1
+    player.diamond -= quantity
     player.ticket += constants.TICKET_PER_DIAMOND * quantity
     
     await player.save()
@@ -53,7 +53,7 @@ async def purchase_pet_slot(telegram_code: str):
     }
 
 
-async def purchase_item(telegram_code: str, item_id: int):
+async def purchase_item(telegram_code: str, pet_id: int, item_id: int):
     player = await PlayerService.get_player_or_not_found(telegram_code)
     item = ItemService.get_local_item(item_id)
     if item is None:
@@ -66,8 +66,12 @@ async def purchase_item(telegram_code: str, item_id: int):
     if currency < item["price"]:
         raise exceptions.InvalidBodyException({"message": "Insufficient currency to purchase"})
     
+    # TODO: If item is a boost, apply directly to player/pet
+    
     currency -= item["price"]
-    current_item = await ItemService.buy_item(player, item_id)
+    if item["category"] < 3:
+        current_item = await ItemService.buy_item(player, item_id)
+        
     currencyType = "ticket"
     
     if item["currencyType"] == 2:

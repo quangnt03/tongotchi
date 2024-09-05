@@ -53,14 +53,29 @@ async def hatch_pet(telegram_code: str, pet_id: int):
             {"message": "Player does not own pet with such id"}
         )
     pet = await PetService.get_pet_by_pet_id(telegram_code, pet_id)
+    if pet.pet_phrase == 0:
+        raise exceptions.InvalidBodyException({"message": "Pet is stil in egg form"})
     if pet.pet_phrase > 1:
-        raise exceptions.InvalidBodyException(
-            {"message": "The selected pet is being hatched"}
-        )
+        raise exceptions.InvalidBodyException({"message": "The selected pet is being hatched"})
     pet = pet.start_hatch()
     await pet.save()
     return pet
 
+
+async def pet_sickness_status(telegram_code: str, pet_id: int, food_type: str):
+    player = await PlayerService.get_player_or_not_found(telegram_code)
+    if pet_id not in player.pets:
+        raise exceptions.InvalidBodyException(
+            {"message": "Player does not own pet with such id"}
+        )
+    pet = await PetService.get_pet_by_pet_id(telegram_code, pet_id)
+    return {
+        "sickness": pet.sickness,
+        "health": pet.health_value,
+        "hunger": pet.hunger_value,
+        "hygiene": pet.hygiene_value,
+        "happiness": pet.happy_value,
+    }
 
 async def claim_hatched_pet(telegram_code: str, pet_id: int):
     player = await PlayerService.get_player_or_not_found(telegram_code)
@@ -89,7 +104,7 @@ async def claim_hatched_pet(telegram_code: str, pet_id: int):
             }
         )
     pet = pet.claim_hatch()
-    player.ticket += constants.HATCH_COMPLETE_AWARD
+    player = player.gain_ticket(constants.HATCH_COMPLETE_AWARD)
     await pet.save()
     await player.save()
     return {

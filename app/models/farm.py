@@ -6,7 +6,7 @@ from app.config import constants
 class Farm(Document):
     telegram_code: str
     start: datetime = datetime.now()
-    end: datetime = datetime.now() + timedelta(minutes=2)
+    end: datetime = datetime.now() + constants.FARM_DURATION
     
 class FarmResponse(Farm):
     now: datetime = datetime.now()

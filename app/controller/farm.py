@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 from app.services import player as PlayerService, farm as FarmService
-from app.models.farm import FarmResponse
 from app.handler import exceptions
 from app.config import constants
 
@@ -30,7 +29,8 @@ async def start_farm(telegram_code: str):
         })
     new_farm = await FarmService.create_new_farm(telegram_code)
     return { 
-        **new_farm.__dict__, 
+        "start": new_farm.start.isoformat(),
+        "end": new_farm.end.isoformat(),
         "now": datetime.now().isoformat(),
         "reminder_code": player.reminder_code
     }
@@ -49,7 +49,7 @@ async def claim_farm(telegram_code: str, reminder_code: str):
             "end": farm.end.isoformat(),
             "timeleft": str(timeleft)
         })
-    player.ticket += constants.FARM_AWARD
+    player = player.gain_ticket(constants.FARM_AWARD)
     player.reminder_code = reminder_code
     await farm.delete()
     await player.save()

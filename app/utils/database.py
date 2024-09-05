@@ -11,4 +11,4 @@ async def connect():
     client = AsyncIOMotorClient(os.getenv("MONGO_URL"))
     database = client[os.getenv("DATABASE")]
     await init_beanie(database, document_models=[Player, Pet, Farm, Item])
-    print("INFO:", "    Database Connection established", sep="\t")
+    print("INFO:", "  Database Connection established", sep="\t")

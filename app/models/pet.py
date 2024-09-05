@@ -3,6 +3,7 @@ from beanie import Document
 from pydantic import BaseModel
 from app import utils
 from app.config import constants, enum
+from app.services import player as PlayerService
 
 class Pet(Document):
     telegram_code: str
@@ -30,23 +31,28 @@ class Pet(Document):
     today_clean_exp: int = 0
     today_boost_exp: int = 0
     sickness: bool = False
+    is_alive: bool = True
+
 
     def start_hatch(self):
         self.pet_phrase += 1
         self.target_hatching_time = datetime.now() + timedelta(minutes=constants.HATCH_DURATION)
         return self
 
+
     def claim_hatch(self):
         self.pet_phrase += 1
         self.next_poop_time = utils.next_poop_time()
-        self.last_sleep_time = datetime.now() - timedelta(hours=2)
+        self.last_sleep_time = datetime.now() - constants.SLEEP_DURATION
         self.last_saved_time = datetime.now()
         self.last_statistic_update = datetime.now()
+        self.last_write_db = datetime.now()
         self.happy_value = 70
         self.hygiene_value = 70
         self.hunger_value = 70
         self.health_value = self.get_health() 
         return self
+
     
     def gain_exp(self, exp: int):
         self.pet_exp += exp
@@ -79,7 +85,7 @@ class Pet(Document):
 
     
     def reset_stat(self):
-        if datetime.now() - self.last_saved_time >= timedelta(hours=24):
+        if datetime.now() - self.last_saved_time >= constants.DAY_RESET_CYCLE:
             self.today_feed_exp = 0
             self.today_play_exp = 0
             self.today_clean_exp = 0
@@ -87,32 +93,46 @@ class Pet(Document):
             self.last_saved_time = datetime.now()
         
         statistic_update_period = datetime.now() - self.last_statistic_update
-        statistic_update_period_hours = statistic_update_period.total_seconds() // 3600
+        statistic_update_by_mins = statistic_update_period.total_seconds() // 60
         
-        if statistic_update_period >= timedelta(hours=1):
-            self.happy_value -= (25 / 9) * statistic_update_period_hours
-            self.hygiene_value -= (25 / 9) * statistic_update_period_hours
-            self.hunger_value -= (25 / 9) * statistic_update_period_hours
+        if statistic_update_period >= constants.PET_UPDATE_PERIOD:
+            self.happy_value -= constants.STAT_DECLINE_PER_MINUTE * statistic_update_by_mins
+            self.hygiene_value -= constants.STAT_DECLINE_PER_MINUTE * statistic_update_by_mins
+            self.hunger_value -= constants.STAT_DECLINE_PER_MINUTE * statistic_update_by_mins
+            self.last_statistic_update = datetime.now()
         
-        self.last_statistic_update = datetime.now()
         return self
     
 
     def sickroll(self):
-        if self.health_value < 30:
-            if self.last_sick_roll == None or datetime.now() - self.last_sick_roll >= timedelta(minutes=30):
+        if self.health_value < 30 and not self.sickness:
+            if self.last_sick_roll == None \
+                or datetime.now() - self.last_sick_roll >= constants.SICK_ROLL_PERIOD:
                 self.sickness = utils.is_sickness()
                 self.last_sick_roll = datetime.now()
         return self
 
     
     async def update_info(self):
-        if self.pet_phrase == 3:
+        if self.pet_phrase == 3 and self.is_alive:
             self.reset_stat().poop().sleeping().sickroll()
             self.health_value = self.get_health()
-            self.last_write_db = datetime.now()
-            await self.save()
+            if self.health_value <= 0:
+                return await self.die()
+            else:
+                self.last_write_db = datetime.now()
+                await self.save()
         return self
+    
+    async def die(self):
+        self.is_alive = False
+        player = await PlayerService.find_player_by_telegram_code(self.telegram_code)        
+        player.pets.remove(self.pet_id)
+        if len(player.pets) == 0:
+            player.ticket += 1000
+        await self.delete()
+        await player.save()
+        return None
 
 class QuerySinglePet(BaseModel):
     telegram_code: str

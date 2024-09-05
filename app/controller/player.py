@@ -46,7 +46,7 @@ async def complete_quest(telegram_code: str, quest: int):
         })
         
     player.social_quest_completed[quest] = True
-    player.ticket += constants.SOCIAL_QUEST_TICKET_REWARD
+    player = player.gain_ticket(constants.SOCIAL_QUEST_TICKET_REWARD)
  
     no_completed_quest = 0 
     for status in player.social_quest_completed:

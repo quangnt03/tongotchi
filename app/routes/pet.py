@@ -17,6 +17,13 @@ async def get_pet(query: QuerySinglePet):
     return await PetController.get_single_pet_with_telegram(
         query.telegram_code, query.pet_id
     )
+    
+        
+@pet_router.post("/sick")
+async def get_pet_sickness(query: QuerySinglePet):
+    return await PetController.pet_sickness_status(
+        query.telegram_code, query.pet_id
+    )
 
 
 @pet_router.post("/new")

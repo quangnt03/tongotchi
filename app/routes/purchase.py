@@ -21,4 +21,4 @@ async def purchase_petslot(player: PlayerPurchase):
 
 @purchase_router.post("/item")
 async def purchase_item(query: QueryItem):
-    return await PurchaseController.purchase_item(query.telegram_code, query.item_id)
+    return await PurchaseController.purchase_item(query.telegram_code, query.pet_id, query.item_id)
