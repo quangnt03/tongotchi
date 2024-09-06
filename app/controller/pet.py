@@ -2,8 +2,9 @@ import random
 from datetime import datetime, timedelta
 
 from app.config import constants
+from app.config.level import LEVEL_REWARD
 from app.handler import exceptions
-from app.services import player as PlayerService, pet as PetService
+from app.services import player as PlayerService, pet as PetService, item as ItemService
 
 
 async def get_all_pets_with_telegram(telegram_code: str):
@@ -62,7 +63,7 @@ async def hatch_pet(telegram_code: str, pet_id: int):
     return pet
 
 
-async def pet_sickness_status(telegram_code: str, pet_id: int, food_type: str):
+async def pet_sickness_status(telegram_code: str, pet_id: int):
     player = await PlayerService.get_player_or_not_found(telegram_code)
     if pet_id not in player.pets:
         raise exceptions.InvalidBodyException(
@@ -76,6 +77,7 @@ async def pet_sickness_status(telegram_code: str, pet_id: int, food_type: str):
         "hygiene": pet.hygiene_value,
         "happiness": pet.happy_value,
     }
+    
 
 async def claim_hatched_pet(telegram_code: str, pet_id: int):
     player = await PlayerService.get_player_or_not_found(telegram_code)
@@ -112,4 +114,103 @@ async def claim_hatched_pet(telegram_code: str, pet_id: int):
         "now": datetime.now().isoformat(),
         "target_time": pet.target_hatching_time,
         "time_left": str(timedelta(hours=0, minutes=0)),
+    }
+
+
+async def level_up_pet(telegram_code: str, pet_id: int):
+    player = await PlayerService.get_player_or_not_found(telegram_code)
+    if pet_id not in player.pets:
+        raise exceptions.InvalidBodyException(
+            {"message": "Player does not own pet with such id"}
+        )
+    pet = await PetService.get_pet_by_pet_id(telegram_code, pet_id)
+    if pet.pet_phrase < 3:
+        raise exceptions.InvalidBodyException(
+            {"message": "Pet is not yet being hatched"}
+        )
+    
+    if pet.pet_level == constants.PET_MAX_LEVEL:
+        raise exceptions.InvalidBodyException({
+            "message": "Pet is already at maximum level",
+            "pet_level": pet.level
+        })
+        
+    next_level = LEVEL_REWARD[pet.pet_level + 1]
+    if next_level['exp'] > pet.pet_exp:
+        raise exceptions.InvalidBodyException({
+            "message": "Pet does not have enough exp to level up",
+            "pet_exp": pet.pet_exp,
+            "next_level_exp": next_level['exp']
+        })
+    if next_level["evolution"] > pet.pet_evolve_level:
+        raise exceptions.InvalidBodyException({
+            "message": "Pet needs to evolve to level up",
+            "pet_evolve_level": pet.pet_evolve_level,
+            "next_level_evolution": next_level["evolution"]
+        })
+        
+    pet.pet_level += 1
+    player.diamond += next_level["diamonds"]
+    player = player.gain_ticket(next_level["tickets"])
+    
+    await pet.save()
+    await player.save()
+    
+    return {
+        "ticket": player.ticket,
+        "diamond": player.diamond,
+        "pet_level": pet.pet_level,
+        "pet_exp": pet.pet_exp,
+        "pet_evolve_level": pet.pet_evolve_level,
+    }
+
+
+async def evolve_pet(telegram_code: str, pet_id: int):
+    player = await PlayerService.get_player_or_not_found(telegram_code)
+    if pet_id not in player.pets:
+        raise exceptions.InvalidBodyException(
+            {"message": "Player does not own pet with such id"}
+        )
+    pet = await PetService.get_pet_by_pet_id(telegram_code, pet_id)
+    if pet.pet_phrase < 3:
+        raise exceptions.InvalidBodyException(
+            {"message": "Pet is not yet being hatched"}
+        )
+    
+    if pet.pet_level == constants.PET_MAX_EVOLUTION:
+        raise exceptions.InvalidBodyException({
+            "message": "Pet is already at maximum evolution",
+            "pet_evolution_level": pet.pet_evolve_level
+        })
+        
+    next_level = LEVEL_REWARD[pet.pet_level + 1]
+    if next_level["evolution"] == pet.pet_evolve_level:
+        raise exceptions.InvalidBodyException({
+            "message": "Pet pet needs to be at specified level",
+            "pet_evolve_level": pet.pet_exp,
+            "pet_level_evolution": next_level["evolution"]
+        })
+     
+    evolve_potion = await ItemService.find_item(player, constants.EVOLVE_POTION_ID)
+    
+    if evolve_potion is None:
+        raise exceptions.InvalidBodyException({
+            "message": "Evolution requires evolve potion"
+        })
+       
+    pet.pet_level = next_level["level"]
+    pet.pet_evolve_level = next_level["evolution"]
+    player.diamond += next_level["diamonds"]
+    player = player.gain_ticket(next_level["tickets"])
+    
+    await evolve_potion.use_item().save()
+    await player.save()
+    await pet.save()
+    
+    return {
+        "ticket": player.ticket,
+        "diamond": player.diamond,
+        "pet_level": pet.pet_level,
+        "pet_exp": pet.pet_exp,
+        "pet_evolve_level": pet.pet_evolve_level,
     }

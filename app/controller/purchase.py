@@ -53,7 +53,7 @@ async def purchase_pet_slot(telegram_code: str):
     }
 
 
-async def purchase_item(telegram_code: str, pet_id: int, item_id: int):
+async def purchase_item(telegram_code: str, pet_id: int | None, item_id: int):
     player = await PlayerService.get_player_or_not_found(telegram_code)
     item = ItemService.get_local_item(item_id)
     if item is None:
@@ -66,11 +66,10 @@ async def purchase_item(telegram_code: str, pet_id: int, item_id: int):
     if currency < item["price"]:
         raise exceptions.InvalidBodyException({"message": "Insufficient currency to purchase"})
     
-    # TODO: If item is a boost, apply directly to player/pet
-    
     currency -= item["price"]
     pet = None
-    if item["category"] < 3:
+    current_item = None
+    if item["category"] < 3 or item_id == constants.EVOLVE_POTION_ID:
         current_item = await ItemService.buy_item(player, item_id)
     elif item["Id"] == constants.TICKET_BOOST_ITEM_ID:
         player = PlayerService.get_boost(player)
@@ -90,7 +89,7 @@ async def purchase_item(telegram_code: str, pet_id: int, item_id: int):
     if pet is not None:
         await pet.save()
         
-    if item["category"] < 3:
+    if current_item is not None:
         return {"item": current_item, currencyType: currency}
     elif item_id == constants.TICKET_BOOST_ITEM_ID:
         return {

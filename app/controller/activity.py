@@ -93,19 +93,19 @@ def activity_reducer(
     action: ACTIVITY_CATEGORY,
     item_detail: ItemService.LocalItem
 ) ->  [PlayerService.Player, PetService.Pet]: # type: ignore
-    if action == ACTIVITY_CATEGORY.CURE:
+    if action == ACTIVITY_CATEGORY.CURE.value:
         pet.sickness = False
         pet.happy_value += item_detail["value"]
         pet.hygiene_value += item_detail["value"]
         pet.hunger_value += item_detail["value"]
 
-    if action == ACTIVITY_CATEGORY.BATH:
+    elif action == ACTIVITY_CATEGORY.BATH.value:
         player = player.gain_ticket(ACTIVITY_TICKET_MAP[ACTIVITY_CATEGORY.BATH])
         pet.pet_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.BATH]
         pet.today_clean_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.BATH]
         pet.hygiene_value += ACTIVITY_STATS[ACTIVITY_CATEGORY.CLEAN]
     
-    elif action == ACTIVITY_CATEGORY.CLEAN:
+    elif action == ACTIVITY_CATEGORY.CLEAN.value:
         player = player.gain_ticket(ACTIVITY_TICKET_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count)
         pet.pet_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count
         pet.today_clean_exp += CLEAN_EXP_MAP[ACTIVITY_CATEGORY.CLEAN] * pet.poop_count
@@ -116,7 +116,7 @@ def activity_reducer(
         exp = ITEM_EXP_MAP[specific_category]
         pet.pet_exp += exp
         value = item_detail["value"]
-        if action == ACTIVITY_CATEGORY.PLAY:
+        if action == ACTIVITY_CATEGORY.PLAY.value:
             pet.happy_value += value        
             pet.today_play_exp += exp
         else:

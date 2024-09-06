@@ -39,3 +39,13 @@ async def get_hatch(player: QuerySinglePet):
 @pet_router.post("/claim")
 async def claim_hatched_pet(query: QuerySinglePet):
     return await PetController.claim_hatched_pet(query.telegram_code, query.pet_id)
+
+
+@pet_router.post("/levelup")
+async def level_up_pet(query: QuerySinglePet):
+    return await PetController.level_up_pet(query.telegram_code, query.pet_id)
+
+
+@pet_router.post("/evolve")
+async def evovle_pet(query: QuerySinglePet):
+    return await PetController.evolve_pet(query.telegram_code, query.pet_id)
