@@ -18,7 +18,9 @@ XP_BOOST = 30
 TICKET_BOOST_ITEM_ID = 30
 SOCIAL_QUEST_TICKET_REWARD = 40
 TICKET_PER_DIAMOND = 920
+GAME_TICKET_PER_DIAMOND = 5
 DIAMOND_PER_PETSLOT = 4
+PETSLOT_PER_DIAMOND = 2
 DAILY_XP_LIMIT = 268
 SICKNESS_PERCENT = 30
 STAT_DECLINE_PER_MINUTE = 100 / 2160
@@ -39,11 +41,12 @@ BOOST_DURATION = timedelta(days=3)
 
 NEW_PLAYER = {
     "reminder_code": None,
-    "game_ticket": 0,
+    "game_ticket": 5,
     "ticket": 1000,
     "diamond": 0,
     "accumulated_point": 0,
     "milestone": 0,
+    "game_point": 0,
     "last_claimed_reward": date.today(),
     "day_collected": 0,
     "is_tutorial_done": False,

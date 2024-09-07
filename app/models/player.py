@@ -15,6 +15,8 @@ class Player(Document):
     ticket: int
     diamond: int
     accumulated_point: int
+    game_point: int
+    in_game: bool = False
     pets: List[int] = set[int]()
     pet_slot: int = constants.NORMAL_PET_SLOT
     boost: date | None = None
@@ -37,3 +39,6 @@ class PlayerSocialQuest(PlayerTelegramCode):
 
 class PlayerPurchase(PlayerTelegramCode):
     quantity: int
+
+class PlayerGame(PlayerTelegramCode):
+    score: int

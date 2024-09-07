@@ -16,9 +16,8 @@ async def get_or_create_player(telegram_code: str):
     else:
         player = await PlayerService.daily_login(player_in_db)
         pets = await PetService.find_pet_with_player(telegram_code)
-        player_in_db = { **player.__dict__ }
-        player_in_db["pets"] = pets     
-        
+        player_in_db = {**player.__dict__, "pets": pets}
+
     return player_in_db
 
 async def get_player_quest(telegram_code: str):

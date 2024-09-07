@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Union, List
 
 from app.models.player import Player
 from app.config import constants
@@ -55,6 +56,8 @@ async def daily_login(player: Player) -> Player:
     else:
         award_ticket = (player.day_collected + 2) * constants.BASE_TICKET_FACTOR
     player = player.gain_ticket(award_ticket)
+    if player.game_ticket < 5:
+        player.game_ticket = 5
     player.last_claimed_reward = date.today()
     await player.save()
     return player
@@ -65,3 +68,11 @@ def get_boost(player: Player):
         player.boost = date.today() 
     player.boost += constants.BOOST_DURATION
     return player
+
+
+async def get_game_leaderboard(player: Player) -> Union[List[Player], int]:
+    player_list = Player.find_all().sort(-Player.game_point)
+    leaderboard = await player_list.limit(10).to_list()
+    compare_leaderboard = await player_list.to_list()
+    player_position = compare_leaderboard.index(player)
+    return [leaderboard, player_position]

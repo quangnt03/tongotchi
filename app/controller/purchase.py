@@ -20,6 +20,23 @@ async def purchase_ticket(telegram_code: str, quantity: int):
         "diamond": player.diamond,
     }
 
+async def purchase_game_ticket(telegram_code: str, quantity: int):
+    player = await PlayerService.get_player_or_not_found(telegram_code)
+    if quantity <= 0:
+        raise exceptions.InternalServerException({"message": "Invalid quantity"})
+
+    if player.diamond < quantity:
+        raise exceptions.InvalidBodyException({"message": "Not enough diamond"})
+
+    player.diamond -= quantity
+    player.game_ticket += constants.GAME_TICKET_PER_DIAMOND * quantity
+
+    await player.save()
+    return {
+        "game_ticket": player.game_ticket,
+        "diamond": player.diamond,
+    }
+
 
 async def purchase_diamond(telegram_code: str, quantity: int):
     player = await PlayerService.get_player_or_not_found(telegram_code)

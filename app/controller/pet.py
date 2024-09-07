@@ -152,7 +152,12 @@ async def level_up_pet(telegram_code: str, pet_id: int):
     pet.pet_level += 1
     player.diamond += next_level["diamonds"]
     player = player.gain_ticket(next_level["tickets"])
-    
+    if next_level["egg"] > 0:
+        if player.pet_slot < constants.MAX_PET_SLOT:
+            player.pet_slot += next_level["egg"]
+        else:
+            player.diamond += constants.PETSLOT_PER_DIAMOND
+        
     await pet.save()
     await player.save()
     
@@ -202,6 +207,11 @@ async def evolve_pet(telegram_code: str, pet_id: int):
     pet.pet_evolve_level = next_level["evolution"]
     player.diamond += next_level["diamonds"]
     player = player.gain_ticket(next_level["tickets"])
+    if next_level["egg"] > 0:
+        if player.pet_slot < constants.MAX_PET_SLOT:
+            player.pet_slot += next_level["egg"]
+        else:
+            player.diamond += constants.PETSLOT_PER_DIAMOND
     
     await evolve_potion.use_item().save()
     await player.save()

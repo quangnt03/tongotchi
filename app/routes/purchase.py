@@ -14,6 +14,10 @@ async def purchase_ticket(player: PlayerPurchase):
 async def purchase_diamond(player: PlayerPurchase):
     return await PurchaseController.purchase_diamond(player.telegram_code, player.quantity)
 
+@purchase_router.post("/gameticket")
+async def purchase_game_ticket(player: PlayerPurchase):
+    return await PurchaseController.purchase_game_ticket(player.telegram_code, player.quantity)
+
 
 @purchase_router.post("/petslot")
 async def purchase_petslot(player: PlayerPurchase):
