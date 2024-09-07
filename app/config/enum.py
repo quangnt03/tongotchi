@@ -42,6 +42,14 @@ ITEM_EXP_MAP = {
     TOY_CATEGORY.BIG.value: 15,
 }
 
+
+TOY_PRICE_MAP = {
+    TOY_CATEGORY.SMALL.value: 10,
+    TOY_CATEGORY.MEDIUM.value: 20,
+    TOY_CATEGORY.BIG.value: 30,
+}
+
+
 CLEAN_EXP_MAP = {
     ACTIVITY_CATEGORY.BATH.value: 5,
     ACTIVITY_CATEGORY.CLEAN.value: 2,

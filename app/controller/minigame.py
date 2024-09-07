@@ -57,5 +57,6 @@ async def get_leaderboard(telegram_code: str):
 
     return {
         "leaderboard": formatted_leaderboard,
-        "player_position": player_position + 1
+        "player_position": player_position + 1,
+        "game_point": player.game_point
     }

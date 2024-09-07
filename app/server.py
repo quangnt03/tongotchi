@@ -14,6 +14,8 @@ from app.routes.inventory import inventory_router
 from app.routes.purchase import purchase_router
 from app.routes.activity import activity_router
 from app.routes.minigame import game_router
+from app.routes.milestone import milestone_router
+from app.routes.misselious import misselious_router
 
 
 app = FastAPI(lifespan=lifespan)
@@ -50,6 +52,8 @@ app.include_router(inventory_router)
 app.include_router(purchase_router)
 app.include_router(activity_router)
 app.include_router(game_router)
+app.include_router(milestone_router) 
+app.include_router(misselious_router) 
 
 
 @app.get("/")

@@ -14,7 +14,7 @@ class Player(Document):
     game_ticket: int
     ticket: int
     diamond: int
-    accumulated_point: int
+    accumulated_point: float
     game_point: int
     in_game: bool = False
     pets: List[int] = set[int]()
@@ -33,12 +33,19 @@ class Player(Document):
     
 class PlayerTelegramCode(BaseModel):
     telegram_code: str
-    
+
+
 class PlayerSocialQuest(PlayerTelegramCode):
     quest: int
+
 
 class PlayerPurchase(PlayerTelegramCode):
     quantity: int
 
+
 class PlayerGame(PlayerTelegramCode):
     score: int
+
+
+class PlayerMilestone(PlayerTelegramCode):
+    accumulated_point: int

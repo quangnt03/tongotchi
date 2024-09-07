@@ -32,6 +32,7 @@ class Pet(Document):
     today_boost_exp: int = 0
     sickness: bool = False
     is_alive: bool = True
+    robot_maid: datetime | None = None
 
 
     def start_hatch(self):
