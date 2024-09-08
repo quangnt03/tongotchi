@@ -17,6 +17,14 @@ async def find_player_items(player: Player) -> list[Item]:
     ).to_list()
     return items
 
+
+async def find_item_by_category(player: Player, category: ITEM_CATEGORY) -> list[Item]:
+    items = await Item.find(
+        Item.telegram_code == player.telegram_code \
+            and Item.category == category
+    ).to_list()
+    return items
+
     
 async def buy_item(player: Player, item_id: int, quantity = 1) -> Item:
     item = await Item.find(
@@ -25,7 +33,14 @@ async def buy_item(player: Player, item_id: int, quantity = 1) -> Item:
 
     if item is None:
         local_item = get_local_item(item_id)
-        item = Item(item_id=item_id, telegram_code=player.telegram_code, quantity=quantity)
+        item = Item(
+            item_id=item_id, 
+            telegram_code=player.telegram_code, 
+            quantity=quantity,
+            category=local_item["category"],
+            specific_category=local_item["category"]
+        )
+        
         if local_item["category"] == ITEM_CATEGORY.TOY:
             item.usage_limit = 10
         await item.insert()

@@ -1,3 +1,6 @@
+from datetime import datetime
+import asyncio
+
 from app.services import player as PlayerService, \
     item as ItemService, \
     pet as PetService
@@ -131,3 +134,44 @@ def activity_reducer(
     pet.health_value = pet.get_health()
     
     return [player, pet]
+
+
+async def activate_robot(pet: PetService.Pet):
+    if pet.robot_maid is None or pet.robot_maid < datetime.now():
+        return
+    player = await PlayerService.find_player_by_telegram_code(pet.telegram_code)
+    food = await ItemService.find_item_by_category(player, ITEM_CATEGORY.FOOD)
+    toys = await ItemService.find_item_by_category(player, ITEM_CATEGORY.TOY)
+    
+    tasks = []
+    if len(toys) > 0:
+        play_task = complete_activity(
+            pet.telegram_code, 
+            pet.pet_id, 
+            ACTIVITY_CATEGORY.PLAY, 
+            toys[0].item_id
+        )
+        tasks.append(play_task)
+    if len(food) > 0:
+        feed_task = complete_activity(
+            pet.telegram_code, 
+            pet.pet_id, 
+            ACTIVITY_CATEGORY.FEED, 
+            food[0].item_id
+        )
+        tasks.append(feed_task)
+    
+    bath_task = complete_activity(
+        pet.telegram_code, 
+        pet.pet_id, 
+        ACTIVITY_CATEGORY.BATH
+    )
+    tasks.append(bath_task)
+    
+    clean_task = complete_activity(
+        pet.telegram_code, 
+        pet.pet_id, 
+        ACTIVITY_CATEGORY.CLEAN
+    )
+    tasks.append(clean_task)
+    await asyncio.gather(*tasks)

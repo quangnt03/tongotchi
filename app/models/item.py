@@ -8,6 +8,8 @@ class Item(Document):
     usage_limit: int = 1
     usage: int = 0
     quantity: int = 1
+    category: int
+    specific_category: int
     def use_item(self):
         if self.usage < self.usage_limit:
             self.usage += 1
