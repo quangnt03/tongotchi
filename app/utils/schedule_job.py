@@ -14,5 +14,5 @@ async def update_pet():
 
 async def init_schedule() -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(update_pet, trigger=IntervalTrigger(minutes=1))
+    scheduler.add_job(update_pet, trigger=IntervalTrigger(minutes=10))
     return scheduler

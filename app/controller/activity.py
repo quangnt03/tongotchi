@@ -144,7 +144,7 @@ async def activate_robot(pet: PetService.Pet):
     toys = await ItemService.find_item_by_category(player, ITEM_CATEGORY.TOY)
     
     tasks = []
-    if len(toys) > 0:
+    if len(toys) > 0 and pet.happy_value < 90:
         play_task = complete_activity(
             pet.telegram_code, 
             pet.pet_id, 
@@ -152,7 +152,7 @@ async def activate_robot(pet: PetService.Pet):
             toys[0].item_id
         )
         tasks.append(play_task)
-    if len(food) > 0:
+    if len(food) > 0 and pet.hunger_value < 90:
         feed_task = complete_activity(
             pet.telegram_code, 
             pet.pet_id, 
@@ -160,18 +160,20 @@ async def activate_robot(pet: PetService.Pet):
             food[0].item_id
         )
         tasks.append(feed_task)
-    
-    bath_task = complete_activity(
-        pet.telegram_code, 
-        pet.pet_id, 
-        ACTIVITY_CATEGORY.BATH
-    )
-    tasks.append(bath_task)
-    
-    clean_task = complete_activity(
-        pet.telegram_code, 
-        pet.pet_id, 
-        ACTIVITY_CATEGORY.CLEAN
-    )
-    tasks.append(clean_task)
-    await asyncio.gather(*tasks)
+    if pet.hygiene_value < 90:
+        bath_task = complete_activity(
+            pet.telegram_code, 
+            pet.pet_id, 
+            ACTIVITY_CATEGORY.BATH
+        )
+        tasks.append(bath_task)
+    if pet.poop_count > 0:    
+        clean_task = complete_activity(
+            pet.telegram_code, 
+            pet.pet_id, 
+            ACTIVITY_CATEGORY.CLEAN
+        )
+        tasks.append(clean_task)
+        
+    if len(tasks):
+        await asyncio.gather(*tasks)
