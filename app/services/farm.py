@@ -1,9 +1,16 @@
 from datetime import datetime
 
 from app.models.farm import Farm
+from app.config import constants
 
 async def create_new_farm(telegram_code: str):
-    farm = Farm(telegram_code=telegram_code, start=datetime.now())
+    start = datetime.now()
+    end = start + constants.FARM_DURATION
+    farm = Farm(
+        telegram_code=telegram_code, 
+        start=start, 
+        end=end
+    )
     await farm.save()
     return farm
 
