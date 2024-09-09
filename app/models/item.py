@@ -7,7 +7,7 @@ class Item(Document):
     item_id: int
     usage_limit: int = 1
     usage: int = 0
-    quantity: int = 1
+    quantity: int
     category: int
     specific_category: int
     def use_item(self):
@@ -27,4 +27,5 @@ class QueryItem(BaseModel):
 class QueryOnlyItem(BaseModel):
     telegram_code: str
     item_id: int
+    quantity: int = 1
     

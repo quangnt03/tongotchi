@@ -26,7 +26,7 @@ async def find_item_by_category(player: Player, category: ITEM_CATEGORY) -> list
     return items
 
     
-async def buy_item(player: Player, item_id: int, quantity = 1) -> Item:
+async def buy_item(player: Player, item_id: int, qty = 1) -> Item:
     item = await Item.find(
         Item.telegram_code == player.telegram_code and Item.item_id == item_id
     ).first_or_none()
@@ -36,16 +36,16 @@ async def buy_item(player: Player, item_id: int, quantity = 1) -> Item:
         item = Item(
             item_id=item_id, 
             telegram_code=player.telegram_code, 
-            quantity=quantity,
+            quantity=qty,
             category=local_item["category"],
-            specific_category=local_item["category"]
+            specific_category=local_item["specificCategory"]
         )
         
         if local_item["category"] == ITEM_CATEGORY.TOY:
             item.usage_limit = 10
         await item.insert()
     else:
-        item.quantity += quantity
+        item.quantity += qty
         await item.save()
 
     return item   

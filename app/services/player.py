@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import Union, List
 
 from app.models.player import Player
@@ -63,10 +63,11 @@ async def daily_login(player: Player) -> Player:
     return player
 
 
-def get_boost(player: Player):
+def get_boost(player: Player, quantity: int = 1):
     if player.boost is None or player.boost < date.today():
         player.boost = date.today() 
-    player.boost += constants.BOOST_DURATION
+    boost_days = constants.BOOST_DURATION * quantity
+    player.boost += timedelta(days=boost_days)
     return player
 
 

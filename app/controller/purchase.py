@@ -69,7 +69,7 @@ async def purchase_pet_slot(telegram_code: str):
     }
 
 
-async def purchase_item(telegram_code: str, item_id: int):
+async def purchase_item(telegram_code: str, item_id: int, quantity: int = 1):
     player = await PlayerService.get_player_or_not_found(telegram_code)
     item = ItemService.get_local_item(item_id)
     if item is None:
@@ -81,10 +81,11 @@ async def purchase_item(telegram_code: str, item_id: int):
     else:
         currency = player.diamond
     
-    price = item["price"]
+    price = item["price"] * quantity
     if item["category"] == ITEM_CATEGORY.TOY.value:
         price = TOY_PRICE_MAP[item["specificCategory"]]
     
+    price *= quantity
     if currency < price:
         raise exceptions.InvalidBodyException({"message": "Insufficient currency to purchase"})
     
@@ -92,9 +93,9 @@ async def purchase_item(telegram_code: str, item_id: int):
     pet = None
     current_item = None
     if item["Id"] == constants.TICKET_BOOST_ITEM_ID:
-        player = PlayerService.get_boost(player)
+        player = PlayerService.get_boost(player, quantity=quantity)
     else:
-        current_item = await ItemService.buy_item(player, item_id)
+        current_item = await ItemService.buy_item(player, item_id, qty=quantity)
         
     currencyType = "ticket"
     

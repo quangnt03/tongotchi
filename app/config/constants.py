@@ -31,6 +31,7 @@ PET_MAX_LEVEL = 99
 PET_MAX_EVOLUTION = 4
 EVOLVE_LEVEL_CAP = [14, 24, 36, 42]
 PET_LEVEL_UP_AWARD = [25, 37]
+BOOST_DURATION = 3
 
 FARM_DURATION = timedelta(minutes=30)
 AWAKE_DURATION = timedelta(hours=6)
@@ -38,7 +39,6 @@ SLEEP_DURATION = timedelta(hours=2)
 DAY_RESET_CYCLE = timedelta(hours=24)
 PET_UPDATE_PERIOD = timedelta(minutes=10)
 SICK_ROLL_PERIOD = timedelta(minutes=20)
-BOOST_DURATION = timedelta(days=3)
 ROBOT_DURATION = timedelta(days=7)
 
 
